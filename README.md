@@ -7,7 +7,9 @@ RELATIVE PLACEMENT
 
     Why relative placement?
     -----------------------
-      Relative placement is an efficient way of weeding out "abnormal" judge scores. Whereas a classic scoring system can allow one single judge to tank a performance, or, on the contrary, boost it, relative placement does a pretty good job of ignoring outliers. Far and wide, the concept of relative placement is all about MAJORITY. If a majority of judges think you should win, you should win, whether the other judges think otherwise or not.
+      Relative placement is an efficient way of weeding out "abnormal" scores. Whereas a classic point system can allow one single judge to tank a performance, or, on the contrary, boost it, relative placement does a pretty good job of ignoring outliers. Far and wide, the concept of relative placement is all about MAJORITY. If a majority of judges think you should win, you should win, whether or not the other judges think otherwise.
+
+      For an extremely thorough look at relative placement: https://www.worldsdc.com/wp-content/uploads/2016/04/Relative_placement.pdf
 
     Prelims
     -------
@@ -15,7 +17,7 @@ RELATIVE PLACEMENT
       
       - Each judge has a limited "stash" of Yes (they want this comp in the finals) and Maybes, or Alternates (they'd be ok with this comp in the finals but not their first choice). We won't implement the coding itself, but it's strongly suggested to number your Alternates (Alt1, Alt2, etc) to help break ties.
 
-      - As a general rule, you'll want the number of Yes and Alt to loosely match both the number of comps in the prelims and the number of comps wanted in the finals. For a final of 7 comps for example, around 4Y, 2A is good. Be ready to change your plans or, if you need a specific number of comps (for battles, for example), to choose between equal comps.
+      - As a general rule, you'll want the number of Yes and Alt to loosely match both the number of comps in the prelims and the number of comps wanted in the finals. For a final of 7 comps for example, around 4Y, 2A is good. Be ready to change your plans or, if you need a specific number of comps (for battles, for example), to choose between equal comps. I'm sure there's a good way to mathematically determine the best ratio, but I mostly go by feel. Basically the more competitors you have, the bigger the judges' "stash" should be, but not as much as to put a thousand people in finals.
 
       Example:
 
@@ -101,4 +103,75 @@ RELATIVE PLACEMENT
 
       I'm not sure how widespread this method is, I don't remember inventing it but I don't remember seeing it anywhere either. Note that the head judge method will always give more weight to one individual judge's opinion, whereas the conversion tie-breaker takes every majority judge into account (at this point it's just a unanimous majority) which, in my opinion, is more fair and corresponds to the spirit of relative placement.
 
-      You're ready to run your competition now!
+    Prelims Prep Cheat Sheet
+    ------------------------
+      Odd nb of judges
+      Head judge is prudent
+      Numbering Alternates is prudent
+      For an n number of desired finalists, give a scale of Yes and Alt that's in the ballpark of the desired result.
+
+    Prelims Tabulation Cheat Sheet
+    ------------------------------
+      Order comps by yes first, alternate second
+      find natural breaks
+      revert to head judge if natural break conflict
+
+    Finals Prep Cheat Sheet
+    -----------------------
+      Odd nb of judges
+      Head judge not necessary
+
+    Finals Tabulation Cheat Sheet
+    -----------------------------
+      Start with 1s, then 1 and 2s, then 1 through 3, 1 through 4, etc...
+
+      For each placement, if there is a sole majority, this is your next winner.
+
+      If there are multiple majorities, ask yourself:
+        Is there a bigger majority (4 judges in the majority instead of 3)? That person should be next winner, then resolve the remaining winners.
+
+        If majorities are equal, add up the scores comprising the majority (ignoring judges not comprising the majority)
+
+        No bigger majority should go to next placement ** within that tie ** until it's resolved.
+
+        If all else fails (perfect tie), use replace method.
+
+    Examples
+    --------
+
+      Given:
+
+      A  5  4  2  2  4
+      B  4  1  3  3  5
+      C  3  5  5  1  3
+      D  2  3  1  4  1
+      E  1  2  4  5  2
+
+      Steps:
+
+      Going through 1s: no one has a majority. Going to next placement.
+
+      1 and 2s: Majority of 3 for D and E, we have to resolve that tie.
+        Our first tie breaker tells us to add up the scores in the majority. For D that's 1+1+2, for E that's 1+2+2. D gets 1st place, E gets second.
+
+      Next placement is 1 through 3. B and C both have a 3 judges majority.
+        Our first tie breaker tells us to add up the scores. They're both 1+3+3 = 7 - not helpful.
+        Our second tie breaker tells us to go to next placement. 1 through 4 does give B a bigger majority. Note that A, even if they have an equal 1 through 4 majority, are NOT part of the equation, they were not in the 1-3 tie to begin with.
+        B comes ahead of C.
+      
+      Remainder is A in 5th place. Final tally:
+
+                          1-1  1-2   1-3  1-4  1-5  POS
+        D  2  3  1  4  1   2   3(4)                  1
+        E  1  2  4  5  2   1   3(5)                  2
+        B  4  1  3  3  5   1    2    3(7)  4         3
+        C  3  5  5  1  3   1    1    3(7)  3         4
+        A  5  4  2  2  4   -    2     2         5    5
+        
+        
+        
+        
+        
+
+
+You're ready to run your competition now!
