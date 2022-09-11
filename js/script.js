@@ -1,8 +1,9 @@
 let compResults = [
   {
+    //uniqueID / bib number
     compID: 100,
     compName: "Bob and John",
-    scores: [1, 1, 4, 1, 2],
+    scores: [1, 1, 4, 1, 5],
 
     //We will tabulate all majorities here. For clarity, we will leave index 0 blank, so placement will correspond to its index.
     tally : [-1],
@@ -13,8 +14,8 @@ let compResults = [
 
   {
     compID: 200,
-    compName: "Tabitha and Rogatien",
-    scores: [2, 2, 2, 3, 5],
+    compName: "Tabi and Rogatien",
+    scores: [2, 3, 2, 3, 2],
     tally : [-1],
     
     hasMajorityAt : [-1]
@@ -23,7 +24,7 @@ let compResults = [
   {
     compID: 5,
     compName: "Ghyslaine et Paul",
-    scores: [4, 4, 1, 5, 4],
+    scores: [4, 4, 3, 5, 4],
     tally : [-1],
     
     hasMajorityAt : [-1]
@@ -43,7 +44,7 @@ let compResults = [
   {
     compID: 34,
     compName: "Les tabarfucks",
-    scores: [3, 3, 3, 2, 1],
+    scores: [3, 2, 1, 2, 1],
     tally : [-1],
     
     hasMajorityAt : [-1]
@@ -51,11 +52,14 @@ let compResults = [
 
 ];
 
-// for (c=0; c < compResults.length; c++) {
-//   console.log (compResults[c], nbOfOccurences(compResults[c].scores, 5));
-// }
-
 runRelativePlacementRedux(compResults);
+
+function logArray(arrayToLog, msg = "Logging Array") {
+  console.log(msg, `Length: ${arrayToLog.length}`);
+  for (i=0; i < arrayToLog.length; i++) {
+    console.log(arrayToLog[i]);
+  }
+}
 
 function runRelativePlacementRedux(resultsArray)
 {
@@ -97,83 +101,31 @@ function runRelativePlacementRedux(resultsArray)
       case 0:
         console.log(`No majority found at placement ${place}. Moving on...`);
         break;
+
       case 1:
         console.log(`Single majority found at placement ${place}! Placing competitor and continuing...`);
         winnersArray.push(majorityArray.pop());
-        console.log("Winners so far: ", winnersArray);
+        logArray(winnersArray, "Winners so far: ")
         break;
+
       default:
         console.log(`${majorityArray.length} competitors have a majority at placement ${place}. Going to tie breaker with`);
+        logArray(majorityArray, "These folks!");
+        majorityArray = breakTie(majorityArray, place);
+        logArray(majorityArray, "Resolved ties:");
+
+        for (i=0; i < majorityArray.length; i++) {
+          winnersArray.push(majorityArray[i]);
+        }
+        majorityArray = [];
     }
+
   }
 
-  for (i=0; i < winnersArray.length; i++) {
-    console.log(winnersArray[i]);
-  }
-  
-  return winnersArray;
-  
-}
-
-function runRelativePlacement(resultsArray) {
-
-  //for each placement we will put the scores here to see if tie breakers are necessary
-  let majorityArray = [];
-
-  //Once we determine a winner, we will push them here
-  let winnersArray = [];
-
-  //when a competitor has been placed, we will put their index here to ensure they don't get counted again.
-  let placedArray = [];
-
-  //number of columns of scoring.
-  let nbOfJudges = resultsArray[0].scores.length;
-
-  //for clarity purposes we use two variables. this one goes throught the placements 1st through last.
-  for(let place=1; place <= resultsArray.length; place++) { //results.length; place++) {
-
-    //this loop goes through the competitors list itself! For each position, we will iterate the list and check if we have a majority.
-    for (let comp=0; comp < resultsArray.length; comp++) {
-
-      let compObject = resultsArray[comp];
-
-      //If they have a majority AND have not already been placed, add them to majority list.
-      if ((nbOfOccurences(compObject.scores, place) > (nbOfJudges / 2)) && (placedArray.indexOf(comp) < 0)) {
-        majorityArray.push(compObject);
-        //pushing the index of the future competitor(s) in the placed array.
-        placedArray.push(comp);
-      }
-
-    } //end results loop
-    
-    console.log(`majorityArray after ${place}: `);
-
-    for (let k=0; k < majorityArray.length; k++) {
-      console.log(majorityArray[k]);
-    }
-
-    switch(majorityArray.length) {
-      case 0:
-        console.log (`No majority at ${place}, going to next placement`)
-        break;
-      case 1:
-        console.log (`Majority of 1 at ${place} for ${majorityArray[0].compName} - putting them in the Winners list`);
-
-        //a pop would achieve the same results
-        winnersArray.push (majorityArray.shift());
-        break;
-      default:
-        //Tie!
-        console.log (`Tie of ${majorityArray.length} at ${place} - going to tie break`);
-        breakTie(majorityArray, place);
-
-    }
-  
-
-  } //end placement loop
+  logArray(winnersArray);
 
   return winnersArray;
-
+  
 }
 
 //for each comp we calculate the number of occurences between 1 and place
@@ -190,42 +142,62 @@ function nbOfOccurences(scoreLine, place) {
   return counter;
 }
 
-//goes through the classic tie-breakers
+//should return a sorted array of the tie.
 function breakTie(tieArray, place) {
-  console.log(`=====Hello! I've been asked to break a tie at ${place}!`);
 
-  console.log(`=====First tie breaker: bigger majority`);
+  //First Tie Breaker: biggest majority
+  return checkHighestMajority(tieArray, place);
+}
 
-  let higherMajority = 0;
-  let nbMajority = 0;
+//returns an array containing the comps that have a highest majority
+function checkHighestMajority(tieArray, place) {
+  let highestMajorityArray = [];
 
-  let tieBreakWinners = [];
+  //I don't think they're losers! They just lost that tie!
+  let losersArray = [];
+  let highestMajority = 0;
 
-  let higherMajorityArray = [];
+  for(i=0; i < tieArray.length; i++) {
 
-  //finding the highest majority
-  for (let j=0; j < tieArray.length; j++) {
-    console.log (`=====checking ${tieArray[j].compName} `);
-    nbMajority = nbOfOccurences(tieArray[j].scores, place);
+    if (tieArray[i].tally[place] > highestMajority) {
 
-        if (nbMajority >= higherMajority) {
-          higherMajority= nbMajority;
-        }
+      highestMajority = tieArray[i].tally[place];
+      highestMajorityArray = []; //a new highest majority means everyone previously in, isn't anymore.
+      highestMajorityArray.push(tieArray[i]);
+
+    } else if (tieArray[i].tally[place] == highestMajority) {
+
+      highestMajorityArray.push(tieArray[i]);
+
+    }
+      
   }
 
-  console.log(`=====higher Majority determined - ${higherMajority}`);
+  console.log (`=====Highest majority determined: ${highestMajority}.`);
+  logArray(highestMajorityArray, "Highest Majority Array: ")
 
-  //adding those who have the higher majority to higherMajorityWinners
-  for (let j=0; j< tieArray.length; j++) {
-    nbMajority = nbOfOccurences(tieArray[j].scores, place);
-    console.log (`=====nbMajority for ${tieArray[j].compName} - ${nbMajority}`);
-
-    if (nbMajority == higherMajority ) {
-      higherMajorityArray.push(tieArray.splice[j, 1]);
+  for (i=0; i < tieArray.length; i++) {
+    if (highestMajorityArray.indexOf(tieArray[i]) < 0) {
+      losersArray.push(tieArray[i]);
     }
   }
 
-  console.log(`===== higher Majority at ${higherMajority} after first tie break `, higherMajorityArray);
-  console.log(`===== tie Array Remainder at ${higherMajority} after first tie break `, tieArray);
+  logArray(losersArray, "Losers Array: ");
+
+  if (highestMajorityArray.length > 1) { //tie unresolved, this should order the highest majority array.
+    highestMajorityArray = goToNextPlacement(highestMajorityArray, place);
+  }
+
+  //Took care of the winners, taking care of the losers. This should order the losers array.
+  if (losersArray.length > 1) {
+    losersArray = breakTie(losersArray, place);
+  }
+
+  return highestMajorityArray.concat(losersArray);
+
+}
+
+function goToNextPlacement(tieArray, place) {
+  console.log("=====Highest majority didn't work. Going to next placement...");
 
 }
