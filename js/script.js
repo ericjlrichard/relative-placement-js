@@ -3,51 +3,61 @@ let compResults = [
     //uniqueID / bib number
     compID: 100,
     compName: "Bob and John",
-    scores: [1, 1, 4, 1, 5],
+
+    //it's implied that the first score is the head judge in case of a multiple perfect tie.
+    scores: [2, 2, 4, 5, 3],
 
     //We will tabulate all majorities here. For clarity, we will leave index 0 blank, so placement will correspond to its index.
     tally : [-1],
 
-    //corresponding to tally, determines if there's a majority at that position
-    hasMajorityAt : [-1]
+    //corresponding to tally, determines if there's a majority at that position. Again, 0 index is blank and shouldn't be used.
+    hasMajorityAt : [-1],
+
+    //we will use this for the second tie breaker: adding up the total scores at placement.
+    majoritySum: 0,
+
+    //we will use this for the third tie breaker.
+    nextPlacementOccurences: 0
   },
 
   {
     compID: 200,
     compName: "Tabi and Rogatien",
-    scores: [2, 3, 2, 3, 2],
+    scores: [1, 1, 2, 3, 4],
     tally : [-1],
-    
-    hasMajorityAt : [-1]
+    hasMajorityAt : [-1],
+    majoritySum: 0,
+    nextPlacementOccurences: 0
   },
 
   {
     compID: 5,
     compName: "Ghyslaine et Paul",
-    scores: [4, 4, 3, 5, 4],
+    scores: [4, 4, 2, 1, 1],
     tally : [-1],
-    
-    hasMajorityAt : [-1]
-  
+    hasMajorityAt : [-1],
+    majoritySum: 0,
+    nextPlacementOccurences: 0
   },
 
   {
     compID: 8,
     compName: "Roger",
-    scores: [5, 5, 5, 4, 3],
+    scores: [5, 5, 5, 4, 2],
     tally : [-1],
-    
-    hasMajorityAt : [-1]
-  
+    hasMajorityAt : [-1],
+    majoritySum: 0,
+    nextPlacementOccurences: 0
   },
 
   {
     compID: 34,
     compName: "Les tabarfucks",
-    scores: [3, 2, 1, 2, 1],
+    scores: [3, 2, 3, 2, 5],
     tally : [-1],
-    
-    hasMajorityAt : [-1]
+    hasMajorityAt : [-1],
+    majoritySum: 0,
+    nextPlacementOccurences: 0
   }
 
 ];
@@ -142,6 +152,20 @@ function nbOfOccurences(scoreLine, place) {
   return counter;
 }
 
+//sister function of nbOfOccurences, calculates the sum of scores from 1 to place.
+function sumOfScoreLine(scoreLine, place) {
+  
+  let sumScore = 0;
+
+  for (let i=0; i < scoreLine.length; i++) {
+    if (scoreLine[i] <= place) {
+      sumScore += scoreLine[i];
+    }
+  }
+
+  return sumScore;
+}
+
 //should return a sorted array of the tie.
 function breakTie(tieArray, place) {
 
@@ -168,13 +192,12 @@ function checkHighestMajority(tieArray, place) {
     } else if (tieArray[i].tally[place] == highestMajority) {
 
       highestMajorityArray.push(tieArray[i]);
-
     }
       
   }
 
   console.log (`=====Highest majority determined: ${highestMajority}.`);
-  logArray(highestMajorityArray, "Highest Majority Array: ")
+  logArray(highestMajorityArray, "=====Highest Majority Array: ")
 
   for (i=0; i < tieArray.length; i++) {
     if (highestMajorityArray.indexOf(tieArray[i]) < 0) {
@@ -182,13 +205,13 @@ function checkHighestMajority(tieArray, place) {
     }
   }
 
-  logArray(losersArray, "Losers Array: ");
+  logArray(losersArray, "=====Losers Array: ");
 
   if (highestMajorityArray.length > 1) { //tie unresolved, this should order the highest majority array.
-    highestMajorityArray = goToNextPlacement(highestMajorityArray, place);
+    highestMajorityArray = addUpMajority(highestMajorityArray, place);
   }
 
-  //Took care of the winners, taking care of the losers. This should order the losers array.
+  //Took care of the winners, taking care of the losers. This should order the losers array. I think.
   if (losersArray.length > 1) {
     losersArray = breakTie(losersArray, place);
   }
@@ -197,7 +220,94 @@ function checkHighestMajority(tieArray, place) {
 
 }
 
-function goToNextPlacement(tieArray, place) {
-  console.log("=====Highest majority didn't work. Going to next placement...");
+//First tie breaker: adding majority scores up
+function addUpMajority(tieArray, place) {
+  console.log("==========Highest majority didn't work. Going to add up majority...");
+  logArray(tieArray, `==========Array to add up majority at placement ${place}:`);
+
+  losersArray = [];
+  winnersArray = [];
+
+  //We want to find the lowest score
+  let lowestTotal = 999999999;
+  let compObject = {};
+
+  for (i=0; i<tieArray.length; i++) {
+    compObject = tieArray[i];
+    compObject.majoritySum = sumOfScoreLine(compObject.scores, place);
+    if (compObject.majoritySum < lowestTotal) {
+      lowestTotal = compObject.majoritySum;
+    }
+  }
+
+  console.log(`==========Lowest total found: ${lowestTotal} `);
+
+  for (i=0; i<tieArray.length; i++) {
+    compObject = tieArray[i];
+    //should be equal, but this makes sense to catch errors
+    if (compObject.majoritySum == lowestTotal) {
+      winnersArray.push(compObject);
+    } else {
+      losersArray.push(compObject);
+    }
+  }
+
+  logArray(winnersArray, "==========Winners Array");
+  logArray(losersArray, "==========Losers Array");
+  if (winnersArray.length > 1) { //the tie breaker was ineffective. Resolving it first.
+    winnersArray = goToNextPlacement(winnersArray, place);
+  }
+
+  if (losersArray.length > 1) { //Even if the winners are sorted, we have to sort the losers as well.
+    losersArray = addUpMajority(losersArray, place);
+  }
+
+  return winnersArray.concat(losersArray);
+
+}
+
+//going to next placement looks deceptively like the highest majority, but they're not exactly the same. In one case a comp has a higher majority (11224, 22135). In the other they have the same majority (11233, 11245), and in this case the same addUp (otherwise for example (11233, 12233) would have been broken up by the Add Up tie breaker). That being said these would probably work as the same function, mathematically, but for clarity/logging purposes let'S keep them separate.
+
+function goToNextPlacement(tieArray, place) { //third tie breaker, if sum of majority didn't work :(
+  console.log("===============Adding up majority didn't work. Going to next placement...");
+
+  let nextPlacement = place + 1;
+  let biggerMajority = 0;
+
+  let winnersArray = [];
+  let losersArray = [];
+
+  for (let i = 0; i < tieArray.length; i++) {
+    tieArray[i].nextPlacementOccurences = nbOfOccurences(tieArray[i].scores, nextPlacement);
+
+    if (tieArray[i].nextPlacementOccurences > biggerMajority) {
+      biggerMajority = tieArray[i].nextPlacementOccurences;
+    }
+  }
+  
+  console.log(`===============Next majority placement at ${nextPlacement}: ${biggerMajority}`);
+
+  for (let i = 0; i < tieArray.length; i++) {
+    compObject = tieArray[i];
+
+    if (compObject.nextPlacementOccurences == biggerMajority) {
+      winnersArray.push(compObject);
+    } else {
+      losersArray.push(compObject);
+    }
+  }
+
+  logArray(winnersArray, "Winners Array");
+  logArray(losersArray, "Losers Array");
+
+  if (winnersArray.length > 1) {   //if the tie wasn't resolved, we'Ll do next Placement again.
+    winnersArray = goToNextPlacement(winnersArray, nextPlacement);
+  }
+
+  if (losersArray.length > 1) { //if there's a remaining tie, break that tie.
+    losersArray = breakTie(losersArray, nextPlacement);
+  }
+
+  return winnersArray.concat(losersArray);
 
 }
