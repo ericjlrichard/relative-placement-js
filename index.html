@@ -4,22 +4,40 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="./scss/index.css" />
   <title>Relative Placement Tool</title>
 </head>
 <body>
   
   <header>
     <nav>
-      Relative Placement Tool
       Prelims
       Finals
       Printable Templates (links to Google Sheet)
     </nav>
   </header>
   
+  <main>
+    <h1>Relative Placer</h1>
+
+    <form name="form-initialize" id="form-initialize" class="form-init">
+      <span>Initialize with </span><input type="text" class="nb-input" id="nb-comps" value="5"><label for="nb-comps"> competitors</label> <span>and</span> <input type="text" class="nb-input" id="nb-judges" value="5"><label for="nb-judges"> judges</label>. <button type="submit">Inititialize</button>
+    </form>
+
+    <form name="form-results" id="form-results" class="form-results">
+      <div class="comp-list" id="comp-list">
+        <!-- Dynamic table here -->
+      </div>
+      <button type="submit" id="run-button">Run relative placement</button>
+    </form>
+
+    <div class="comp-list" id="comp-results">
+      <!-- Dynamic results here -->
+    </div>
+
+  </main>
   
 <script src="./js/script.js"></script>
-
   
 </body>
 </html>

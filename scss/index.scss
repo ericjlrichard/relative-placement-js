@@ -1,0 +1,25 @@
+@use "./partials/mixins";
+
+//smoll reset
+* {
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+}
+
+.nb-input {
+  width: 30px;
+}
+
+.separator {
+  background-color: #000000;
+  width: 10px;
+}
+
+.comp-card {
+  @include mixins.display-flex();
+}
+
+#run-button {
+  display:none;
+}

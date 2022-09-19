@@ -62,15 +62,6 @@ let compResults = [
 
 ];
 
-runRelativePlacementRedux(compResults);
-
-function logArray(arrayToLog, msg = "Logging Array") {
-  console.log(msg, `Length: ${arrayToLog.length}`);
-  for (i=0; i < arrayToLog.length; i++) {
-    console.log(arrayToLog[i]);
-  }
-}
-
 function runRelativePlacementRedux(resultsArray)
 {
 
@@ -300,6 +291,8 @@ function goToNextPlacement(tieArray, place) { //third tie breaker, if sum of maj
   logArray(winnersArray, "Winners Array");
   logArray(losersArray, "Losers Array");
 
+  if (nextPlacement >= tieArray) //how to get the number of placements from a partial array? We need the # of judges.
+
   if (winnersArray.length > 1) {   //if the tie wasn't resolved, we'Ll do next Placement again.
     winnersArray = goToNextPlacement(winnersArray, nextPlacement);
   }
@@ -311,3 +304,138 @@ function goToNextPlacement(tieArray, place) { //third tie breaker, if sum of maj
   return winnersArray.concat(losersArray);
 
 }
+
+//Executes on load
+
+//runRelativePlacementRedux(compResults);
+
+function logArray(arrayToLog, msg = "Logging Array") {
+  console.log(msg, `Length: ${arrayToLog.length}`);
+  for (i=0; i < arrayToLog.length; i++) {
+    console.log(arrayToLog[i]);
+  }
+}
+
+function createElem(tagType, innerText, classes)
+{
+  let createdElem = document.createElement(tagType);
+
+  //skipping the first argument and starting at 1, we know arguments[0] is the tagType. If no classes arguments are passed (ex createElem("p")), it will skip this loop without tripping up.
+    for (i=2; i<arguments.length; i++) {
+    createdElem.classList.add(arguments[i]);
+    }
+
+  if (innerText.trim() != "") {
+    createdElem.innerText = innerText;
+  }
+    
+  return createdElem;
+}
+
+//similar to createElem, more specialized.
+function createInput(type, defaultValue, id, classes) {
+  let returnObj = createElem("input", "", classes);
+
+  returnObj.type = type;
+  returnObj.value = defaultValue;
+  returnObj.id = id;
+
+  return returnObj;
+}
+
+//could have made a series of arguments but an array felt better.
+function appendChildren(target, componentArray){
+  componentArray.forEach(component => {
+    target.appendChild(component);
+  })
+}
+
+//initialize entry form
+document.getElementById("form-initialize").addEventListener("submit", (event) => {
+
+  event.preventDefault();
+  
+  let nbComps = document.getElementById("nb-comps").value;
+  let nbJudges = document.getElementById("nb-judges").value;
+  let compList = document.querySelector(".comp-list");
+
+  compList.innerHTML = "";
+
+  for (let i=0; i < nbComps; i++) {
+
+    //create a line of nbJudges for each comp
+
+    let bibNumber = createInput("text", 100+i, "bibNb" + i, "nb-input");
+    let compName = createInput("text", "", "compName"+i);
+
+    let compCard = createElem("div", "", "comp-card");
+    let separator = createElem("div", " ", "separator");
+
+    appendChildren(compCard, [bibNumber, compName, separator]);
+
+    for (let j=0; j < nbJudges; j++) {
+      let judgeSlot = createInput("text", "", "judge"+i+"_"+j, "nb-input");
+      compCard.appendChild(judgeSlot);
+    }
+
+    compList.appendChild(compCard);
+
+    document.getElementById("run-button").style.display = "block";
+
+  }
+
+});
+
+//put results in compArray
+
+// compID: 200,
+// compName: "Tabi and Rogatien",
+// scores: [1, 1, 2, 3, 4],
+// tally : [-1],
+// hasMajorityAt : [-1],
+// majoritySum: 0,
+// nextPlacementOccurences: 0
+
+document.getElementById("form-results").addEventListener("submit", event => {
+
+  event.preventDefault();
+
+  let compResultsArray = [];
+
+  let nbComps = document.getElementById("nb-comps").value;
+  let nbJudges = document.getElementById("nb-judges").value;
+
+  for(let i = 0; i < nbComps; i++) {
+    let compObj = {};
+
+    compObj.compID = document.getElementById("bibNb"+i).value;
+
+    compObj.tally = [-1];
+    compObj.hasMajorityAt = [-1];
+    compObj.majoritySum = 0;
+    compObj.nextPlacementOccurences = 0;
+    compObj.scores = [];
+
+    compObj.compName = document.getElementById("compName"+i).value;
+
+    //populate scores
+    for (let j = 0; j < nbJudges ; j++) {
+      compObj.scores.push(document.getElementById("judge"+i+"_"+j).value);
+    }
+
+    compResultsArray.push(compObj);
+  }
+
+  console.table(compResultsArray);
+
+  let winnersArray = runRelativePlacementRedux(compResultsArray);
+
+  console.table(winnersArray);
+
+  let compResultsObj = document.getElementById("comp-results");
+
+  winnersArray.forEach(winner => {
+    compResultsObj.innerHTML += "<br>" + winner.compID + " - " + winner.compName;
+  })
+
+});

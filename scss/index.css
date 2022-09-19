@@ -1,1 +1,26 @@
-/*# sourceMappingURL=index.css.map */
+* {
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+}
+
+.nb-input {
+  width: 30px;
+}
+
+.separator {
+  background-color: #000000;
+  width: 10px;
+}
+
+.comp-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+#run-button {
+  display: none;
+}/*# sourceMappingURL=index.css.map */
