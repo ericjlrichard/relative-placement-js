@@ -5,7 +5,7 @@ let compResults = [
     compName: "Bob and John",
 
     //it's implied that the first score is the head judge in case of a multiple perfect tie.
-    scores: [2, 2, 4, 5, 3],
+    scores: [2, 3, 4, 1, 1],
 
     //We will tabulate all majorities here. For clarity, we will leave index 0 blank, so placement will correspond to its index.
     tally : [-1],
@@ -33,7 +33,7 @@ let compResults = [
   {
     compID: 5,
     compName: "Ghyslaine et Paul",
-    scores: [4, 4, 2, 1, 1],
+    scores: [4, 4, 2, 5, 3],
     tally : [-1],
     hasMajorityAt : [-1],
     majoritySum: 0,
@@ -53,7 +53,7 @@ let compResults = [
   {
     compID: 34,
     compName: "Les tabarfucks",
-    scores: [3, 2, 3, 2, 5],
+    scores: [3, 3, 3, 2, 5],
     tally : [-1],
     hasMajorityAt : [-1],
     majoritySum: 0,
@@ -61,6 +61,8 @@ let compResults = [
   }
 
 ];
+
+//runRelativePlacementRedux(compResults);
 
 function runRelativePlacementRedux(resultsArray)
 {
@@ -291,7 +293,10 @@ function goToNextPlacement(tieArray, place) { //third tie breaker, if sum of maj
   logArray(winnersArray, "Winners Array");
   logArray(losersArray, "Losers Array");
 
-  if (nextPlacement >= tieArray) //how to get the number of placements from a partial array? We need the # of judges.
+  //This is hacky as fuck but I can't think of a reason to have 100 judges.
+  if (nextPlacement === 100) {
+    winnersArray = replaceMethod(winnersArray);
+  }
 
   if (winnersArray.length > 1) {   //if the tie wasn't resolved, we'Ll do next Placement again.
     winnersArray = goToNextPlacement(winnersArray, nextPlacement);
@@ -303,6 +308,18 @@ function goToNextPlacement(tieArray, place) { //third tie breaker, if sum of maj
 
   return winnersArray.concat(losersArray);
 
+}
+
+//If all else fails and we end up with two or more identical score lines ([1 1 3 3 4] and [3 3 4 1 1] for example), we make those scores relative.
+function replaceMethod(tieArray) {
+  let tallyArray = [];
+  let smallestPlacement = 99999;
+  let highestPlacement = 0;
+
+  //for each judge, let's determine who has the best score.
+  for (m=0; m<length(tieArray[0].scores); m++) {
+    //This is tripping me out.
+  }
 }
 
 //Executes on load
@@ -365,7 +382,7 @@ document.getElementById("form-initialize").addEventListener("submit", (event) =>
 
     //create a line of nbJudges for each comp
 
-    let bibNumber = createInput("text", 100+i, "bibNb" + i, "nb-input");
+    let bibNumber = createInput("number", 100+i, "bibNb" + i, "nb-input");
     let compName = createInput("text", "", "compName"+i);
 
     let compCard = createElem("div", "", "comp-card");
@@ -374,7 +391,7 @@ document.getElementById("form-initialize").addEventListener("submit", (event) =>
     appendChildren(compCard, [bibNumber, compName, separator]);
 
     for (let j=0; j < nbJudges; j++) {
-      let judgeSlot = createInput("text", "", "judge"+i+"_"+j, "nb-input");
+      let judgeSlot = createInput("number", "", "judge"+i+"_"+j, "nb-input");
       compCard.appendChild(judgeSlot);
     }
 
@@ -434,6 +451,7 @@ document.getElementById("form-results").addEventListener("submit", event => {
 
   let compResultsObj = document.getElementById("comp-results");
 
+  compResultsObj.innerHTML = "";
   winnersArray.forEach(winner => {
     compResultsObj.innerHTML += "<br>" + winner.compID + " - " + winner.compName;
   })

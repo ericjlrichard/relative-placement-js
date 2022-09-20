@@ -1,14 +1,23 @@
 @use "./partials/mixins";
+@use "./partials/colors" as colors;
 
 //smoll reset
 * {
   box-sizing: border-box;
   margin: 0px;
   padding: 0px;
+
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+
+  background-color: colors.$light-grey;
+}
+
+h1 {
+  background-color: colors.$dark-brown;
 }
 
 .nb-input {
-  width: 30px;
+  width: 40px;
 }
 
 .separator {
@@ -22,4 +31,24 @@
 
 #run-button {
   display:none;
+}
+
+.nav {
+  background-color: colors.$dark-brown;
+  color: colors.$light-grey;
+
+  padding: 1rem 0rem 1rem 1rem;
+  @include mixins.display-flex(row, flex-start);
+}
+
+.main {
+  padding: 1rem;
+}
+
+//components
+
+button {
+  padding: 0.3rem;
+  background-color: colors.$dark-green;
+  color: colors.$light-grey;
 }

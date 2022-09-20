@@ -2,10 +2,16 @@
   box-sizing: border-box;
   margin: 0px;
   padding: 0px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: #F0F7F4;
+}
+
+h1 {
+  background-color: #32292F;
 }
 
 .nb-input {
-  width: 30px;
+  width: 40px;
 }
 
 .separator {
@@ -23,4 +29,25 @@
 
 #run-button {
   display: none;
+}
+
+.nav {
+  background-color: #32292F;
+  color: #F0F7F4;
+  padding: 1rem 0rem 1rem 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.main {
+  padding: 1rem;
+}
+
+button {
+  padding: 0.3rem;
+  background-color: #70ABAF;
+  color: #F0F7F4;
 }/*# sourceMappingURL=index.css.map */
