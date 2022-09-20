@@ -11,7 +11,8 @@ h1 {
 }
 
 .nb-input {
-  width: 40px;
+  width: 50px;
+  text-align: center;
 }
 
 .separator {
@@ -46,8 +47,18 @@ h1 {
   padding: 1rem;
 }
 
+.form-results {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: space-between;
+  flex-wrap: nowrap;
+  padding: 1rem;
+}
+
 button {
   padding: 0.3rem;
+  margin: 0.5rem;
   background-color: #70ABAF;
   color: #F0F7F4;
 }/*# sourceMappingURL=index.css.map */

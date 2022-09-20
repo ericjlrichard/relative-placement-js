@@ -17,7 +17,8 @@ h1 {
 }
 
 .nb-input {
-  width: 40px;
+  width: 50px;
+  text-align: center;
 }
 
 .separator {
@@ -45,10 +46,16 @@ h1 {
   padding: 1rem;
 }
 
+.form-results {
+  @include mixins.display-flex(column, center, space-between);
+  padding: 1rem;
+}
+
 //components
 
 button {
   padding: 0.3rem;
+  margin: 0.5rem;
   background-color: colors.$dark-green;
   color: colors.$light-grey;
 }
