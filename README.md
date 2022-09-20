@@ -1,3 +1,5 @@
+I am making this barebone relative placement tool for a friend who needs it quite urgently for a small event in Quebec City.
+
 RELATIVE PLACEMENT
 ------------------
 
